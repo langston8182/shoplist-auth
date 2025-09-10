@@ -1,0 +1,21 @@
+{
+  "name": "shoplist-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "bestzip build.zip * --ignore=node_modules/aws-sdk/* --ignore=.git",
+    "deploy": "npm run build && echo 'Deploying zip file...'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "bestzip": "^2.2.1",
+    "eslint": "^9.34.0"
+  },
+  "dependencies": {
+    "jose": "^6.1.0"
+  }
+}
