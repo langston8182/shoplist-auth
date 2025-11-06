@@ -65,21 +65,11 @@ async function getAuthConfig() {
                 FRONT_URL: envCfg.FRONT_URL || process.env.FRONT_URL,
                 FRONT_REDIRECT_PATH:
                     envCfg.FRONT_REDIRECT_PATH || process.env.FRONT_REDIRECT_PATH || "",
-                APP_NAME: envCfg.APP_NAME || process.env.APP_NAME || "app",
             };
         })();
     }
     cachedAuthCfg = await cachedAuthCfgPromise;
     return cachedAuthCfg;
-}
-
-/**
- * Retourne le nom du cookie préfixé par l'application
- * Ex: shoplist_access_token, sport_access_token
- */
-async function getCookieName(baseName) {
-    const { APP_NAME } = await getAuthConfig();
-    return `${APP_NAME}_${baseName}`;
 }
 
 async function commonCookie() {
@@ -95,7 +85,7 @@ export class AuthService {
         const cfgAuth = await getAuthConfig();
 
         const tmpCookie = setCookie(
-            await getCookieName("auth_tmp"),
+            "auth_tmp",
             JSON.stringify({ state, codeVerifier }),
             { ...(await commonCookie()), maxAge: 300 }
         );
@@ -125,7 +115,7 @@ export class AuthService {
             cookieHeader = event.cookies.join("; ");
         }
         const cookies = parseCookies({ cookie: cookieHeader });
-        const tmpRaw = cookies[await getCookieName("auth_tmp")];
+        const tmpRaw = cookies.auth_tmp;
         if (!code || !state || !tmpRaw) {
             return { error: "Invalid callback", status: 400 };
         }
@@ -168,13 +158,13 @@ export class AuthService {
         const tokens = new Tokens(raw);
 
         const cookiesOut = [
-            setCookie(await getCookieName("access_token"), tokens.accessToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
-            setCookie(await getCookieName("id_token"), tokens.idToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
-            clearCookie(await getCookieName("auth_tmp"), await commonCookie()),
+            setCookie("access_token", tokens.accessToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
+            setCookie("id_token", tokens.idToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
+            clearCookie("auth_tmp", await commonCookie()),
         ];
         if (tokens.refreshToken) {
             cookiesOut.push(
-                setCookie(await getCookieName("refresh_token"), tokens.refreshToken, {
+                setCookie("refresh_token", tokens.refreshToken, {
                     ...(await commonCookie()),
                     maxAge: 60 * 60 * 24 * 30,
                 })
@@ -193,7 +183,7 @@ export class AuthService {
             cookieHeader = event.cookies.join("; ");
         }
         const cookies = parseCookies({ cookie: cookieHeader });
-        const refresh = cookies[await getCookieName("refresh_token")];
+        const refresh = cookies.refresh_token;
         if (!refresh) return { error: "Missing refresh token", status: 401 };
 
         const form = new URLSearchParams();
@@ -219,10 +209,10 @@ export class AuthService {
         const tokens = new Tokens(raw);
 
         const cookiesOut = [
-            setCookie(await getCookieName("access_token"), tokens.accessToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
+            setCookie("access_token", tokens.accessToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }),
         ];
         if (tokens.idToken) {
-            cookiesOut.push(setCookie(await getCookieName("id_token"), tokens.idToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }));
+            cookiesOut.push(setCookie("id_token", tokens.idToken, { ...(await commonCookie()), maxAge: tokens.expiresIn }));
         }
 
         return { ok: true, cookiesOut, status: 200 };
@@ -236,10 +226,10 @@ export class AuthService {
         url.searchParams.set("logout_uri", `${cfgAuth.FRONT_URL}/`);
 
         const cookies = [
-            clearCookie(await getCookieName("access_token"), await commonCookie()),
-            clearCookie(await getCookieName("id_token"), await commonCookie()),
-            clearCookie(await getCookieName("refresh_token"), await commonCookie()),
-            clearCookie(await getCookieName("auth_tmp"), await commonCookie()),
+            clearCookie("access_token", await commonCookie()),
+            clearCookie("id_token", await commonCookie()),
+            clearCookie("refresh_token", await commonCookie()),
+            clearCookie("auth_tmp", await commonCookie()),
         ];
 
         return { logoutUrl: url.toString(), cookies };

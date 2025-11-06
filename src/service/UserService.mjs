@@ -5,9 +5,6 @@ import {getConfigValue} from "../utils/config.appconfig.mjs";
 let cachedCognitoCfg = null;
 let cachedCognitoCfgPromise = null;
 
-let cachedAuthCfg = null;
-let cachedAuthCfgPromise = null;
-
 const ENV = process.env.ENVIRONMENT || "preprod";
 
 async function getCognitoConfig() {
@@ -29,31 +26,6 @@ async function getCognitoConfig() {
     return cachedCognitoCfg;
 }
 
-async function getAuthConfig() {
-    if (cachedAuthCfg) return cachedAuthCfg;
-    if (!cachedAuthCfgPromise) {
-        cachedAuthCfgPromise = (async () => {
-            const profileName = "auth";
-            const envCfg = await getConfigValue(profileName, "", {});
-
-            // fallback process.env utile en local/tests
-            return {
-                APP_NAME: envCfg.APP_NAME || process.env.APP_NAME || "app",
-            };
-        })();
-    }
-    cachedAuthCfg = await cachedAuthCfgPromise;
-    return cachedAuthCfg;
-}
-
-/**
- * Retourne le nom du cookie préfixé par l'application
- */
-async function getCookieName(baseName) {
-    const { APP_NAME } = await getAuthConfig();
-    return `${APP_NAME}_${baseName}`;
-}
-
 function getCookieHeader(event) {
     if (Array.isArray(event.cookies) && event.cookies.length) return event.cookies.join("; ");
     return event.headers?.cookie || event.headers?.Cookie || "";
@@ -71,7 +43,7 @@ export class UserService {
         const cookieHeader = getCookieHeader(event);
         const cookies = parseCookies({ cookie: cookieHeader });
         // Supporte plusieurs noms si besoin
-        const token = cookies[await getCookieName("id_token")] || null;
+        const token = cookies.id_token || null;
         if (!token) throw new Error("missing_token");
 
         // Vérifie la signature + issuer
