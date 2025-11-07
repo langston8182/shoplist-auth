@@ -1,9 +1,19 @@
 version: 0.2
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
+    - '.aws-sam/cache/**/*'
+    - '/root/.npm/**/*'
+    - 'node_modules/**/*'
 phases:
   install:
     runtime-versions:
-      python: 3.8
+      nodejs: 22
+    commands:
+      - node -v && npm -v
+      - npm install
   build:
     commands:
       # trigger the unit tests here
       - echo 'Running unit tests'
+      - npm run test:unit

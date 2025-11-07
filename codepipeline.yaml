@@ -7,7 +7,7 @@ Description: >
   - UpdatePipeline
   - BuildAndDeployFeatureStack (FeatureGitBranch only)
   - BuildAndPackage (MainGitBranch only)
-  - DeployTest (MainGitBranch only)
+  - DeployPreprod (MainGitBranch only)
   - DeployProd (MainGitBranch only)
 
   **WARNING** You will be billed for the AWS resources used if you create a stack from this template.
@@ -47,10 +47,10 @@ Parameters:
     Default: "shoplist-auth-preprod"
   TestingPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-preprod-p-PipelineExecutionRole-54UFHatU3MAq"
+    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-preprod-p-PipelineExecutionRole-2dCVq95G0v4S"
   TestingCloudFormationExecutionRole:
     Type: String
-    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prepr-CloudFormationExecutionRo-t30RKEsp8WdP"
+    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prepr-CloudFormationExecutionRo-ROKFZizvEmfZ"
   TestingArtifactBucket:
     Type: String
     Default: "cmarchive-shoplist-artifact"
@@ -68,10 +68,10 @@ Parameters:
     Default: "shoplist-auth-prod"
   ProdPipelineExecutionRole:
     Type: String
-    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-iQ8xnuWX55f4"
+    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-hJtTL2LTZ9KC"
   ProdCloudFormationExecutionExeRole:
     Type: String
-    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-6yrhYexXvkl3"
+    Default: "arn:aws:iam::489767271637:role/aws-sam-cli-managed-prod--CloudFormationExecutionRo-zXwbaKCFy12m"
   ProdArtifactBucket:
     Type: String
     Default: "cmarchive-shoplist-artifact"
